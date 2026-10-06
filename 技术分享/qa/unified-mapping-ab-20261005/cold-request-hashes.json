@@ -1,0 +1,112 @@
+[
+  {
+    "file": "A-cold-1.json",
+    "arm": "A",
+    "runId": "afc89ce0-5b37-4675-82c3-2e5cf3c4286d",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "A-cold-2.json",
+    "arm": "A",
+    "runId": "e8613648-90f4-47fd-83da-3210887191fc",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "A-cold-3.json",
+    "arm": "A",
+    "runId": "d3559707-dd04-4c63-a9a6-b73440f951e8",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "B-cold-1.json",
+    "arm": "B",
+    "runId": "c4fd595d-dbb0-44d2-9ac1-d5fbdb249405",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "B-cold-2.json",
+    "arm": "B",
+    "runId": "7e82174b-342a-4aff-b0ae-f0c3884dfee0",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "B-cold-3.json",
+    "arm": "B",
+    "runId": "d9cdd22b-3741-4d13-888b-0609653d6fa2",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "C-cold-1.json",
+    "arm": "C",
+    "runId": "1e069e21-cb51-41b1-93b3-3f14f999d67e",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "C-cold-2.json",
+    "arm": "C",
+    "runId": "3fca97d5-4b31-434d-9f86-c19ebd86608f",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "C-cold-3.json",
+    "arm": "C",
+    "runId": "a50626a8-4288-49b3-ab03-5ff294fa1273",
+    "systemSha256": "db00568648af0c2f8c2c5ec079c3873d8fe7c98a48612c561d6e2320351fd8c8",
+    "toolsCanonicalSha256": "b42422dafc6204aff7a06c98126ba177ccca375e948cf99acb92515b914110d6",
+    "stateSha256": "569bf4aa0371907327272d6d3c88943da683bd165f97bdf76b638a7fbb3e25eb",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "V2-cold-1.json",
+    "arm": "V2",
+    "runId": "40b167eb-05c4-481d-af35-08d1e6e61708",
+    "systemSha256": "50bf0ada7d749fe681d5c00c153a3021f3909df35bbe1a9355204e27caa7bfcc",
+    "toolsCanonicalSha256": "491a6770762489b18282e4b2348bee048d809fe3d76ded59f6ca29d45b6ddc82",
+    "stateSha256": "ac89c64ff7937bcbbe4fd1b970202e1cbe65c91e32038c889458efab9287c63f",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  },
+  {
+    "file": "V2-cold-2.json",
+    "arm": "V2",
+    "runId": "a079e7ad-06c6-473a-a355-c8f7a582e58d",
+    "systemSha256": "50bf0ada7d749fe681d5c00c153a3021f3909df35bbe1a9355204e27caa7bfcc",
+    "toolsCanonicalSha256": "491a6770762489b18282e4b2348bee048d809fe3d76ded59f6ca29d45b6ddc82",
+    "stateSha256": "ac89c64ff7937bcbbe4fd1b970202e1cbe65c91e32038c889458efab9287c63f",
+    "providerModel": "qwen3.8-flash",
+    "modelAccountId": "752561ad-847b-40ef-9830-4327bdbbee62"
+  }
+]

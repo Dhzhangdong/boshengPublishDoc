@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-05",
+  "environment": "ppe",
+  "application": "agentcoreTest",
+  "protocol": "unified@1",
+  "providerModel": "qwen3.8-flash",
+  "instanceId": "codex-dev-unified-20261005",
+  "scope": "真实LLM首轮探索性测试；3个根Run和2个维护子Run。未修改或发布Runtime。",
+  "roots": [
+    {
+      "case": "functionalRun",
+      "runId": "733d5825-f668-46af-9475-26c72b9ce89f",
+      "status": "failed",
+      "steps": 28,
+      "toolCalls": 28,
+      "selfTokens": 224669,
+      "treeTokens": 268784,
+      "error": "agent_run_token_limit_exceeded"
+    },
+    {
+      "case": "guidedRun",
+      "runId": "bb3a39d4-f713-465c-934f-723c38107208",
+      "status": "failed",
+      "steps": 27,
+      "toolCalls": 27,
+      "selfTokens": 220067,
+      "treeTokens": 245045,
+      "error": "agent_run_token_limit_exceeded"
+    },
+    {
+      "case": "naturalRun",
+      "runId": "7f20128f-9296-43ba-888e-df35e2a4b961",
+      "status": "completed",
+      "steps": 17,
+      "toolCalls": 16,
+      "selfTokens": 205815,
+      "treeTokens": 205815,
+      "error": null
+    }
+  ],
+  "totalTreeTokens": 719644,
+  "harness": {
+    "maxRunTokens": 220000,
+    "maxCallTreeTokens": 350000,
+    "maxLoopSteps": 40,
+    "maxToolCalls": 45,
+    "toolResultPreviewEnabled": false,
+    "reason": "禁用宿主结果预览以检查原文映射；成本不直接代表生产默认配置。"
+  },
+  "results": [
+    {
+      "area": "窗口消息隔离",
+      "result": "已验证",
+      "evidence": "进入alpha和beta后的快照仅含system、当前header、本轮user输入；beta checkpoint为空。恢复alpha时加载alpha checkpoint。"
+    },
+    {
+      "area": "折叠",
+      "result": "已验证",
+      "evidence": "原始#11-12被assistant/context_fold替代，projectionSource保留原消息ID；无孤立tool_result。"
+    },
+    {
+      "area": "主动前缀压缩",
+      "result": "已验证",
+      "evidence": "维护子Run读取原始历史后commit coveredThrough=20；父模型随后看到checkpoint和#21-22维护调用/结果。"
+    },
+    {
+      "area": "压缩后折叠回读",
+      "result": "已验证",
+      "evidence": "fold_list compressed false→true，fold_read压缩前后均成功且包含ALPHA-EVIDENCE-6913。"
+    },
+    {
+      "area": "恢复时LLM状态辨识",
+      "result": "失败",
+      "evidence": "基线step22的header为alpha且禁止改写，模型仍调用memory_set写入beta内容，实际覆盖alpha。"
+    },
+    {
+      "area": "仅加强提示词对照",
+      "result": "未解决",
+      "evidence": "新增状态优先级和分层选择规则实际进入systemPrompt；step27仍在alpha生成写beta记忆的调用。本次调用被token限额终止而未执行。"
+    },
+    {
+      "area": "自主业务任务",
+      "result": "完成但有质量问题",
+      "evidence": "自主创建3个阶段窗口，16次工具调用、17次推理，无fold/maintenance调用。A28000余2000、B29000余1000、10月20日不能上线、网络未验收等核心事实正确；把无代下单权限推成供应商承诺不可执行，没有材料支持。"
+    }
+  ],
+  "findings": [
+    "窗口控制工具调用及结果保留在原窗口，恢复原窗口时最新可见历史可能仍是以前离开的动作；header在历史前方，模型会被旧动作和旧待办带偏。该原因是依据快照与行为作出的解释，并非已证明的唯一原因。",
+    "memory_set隐式修改当前窗口，冻结revision只防状态并发变化，无法防模型认错当前窗口。建议expectedWindowId与当前active id不符即拒绝。",
+    "基线压缩前后单轮input为8401→7178；维护子Run消耗44115累计tokens；checkpoint长3884字符。该小样本里维护成本高、摘要冗长，且验收任务本身要求记录过程，不能直接推断所有业务压缩率。",
+    "小组折叠前后实际input为6337→6508（含新增折叠工具交互，并非纯替代长度比较）。短记录不应机械折叠。",
+    "维护子Agent续读0→1→12000，出现重叠重读；最终完整覆盖且提交成功。严格按nextCursor续读的提示词执行仍不稳定。",
+    "公共记忆、窗口memory、result、checkpoint重复保存内容，加上转义JSON，增加成本。",
+    "自主任务在新阶段仍额外读取窗口以确认进度；核心业务计算通过不能等同上下文管理效率通过。"
+  ],
+  "recommendations": [
+    "优先添加窗口恢复/切换后的简短派生状态记录，置于历史末尾，标明当前windowId、revision、本次交接下一步和已完成阶段；不要伪造tool_result。",
+    "memory_set/complete及其他有窗口语义的写操作增加expectedWindowId前置校验。",
+    "统一提示词按任务边界选择窗口、同目标冗长完整片段选择折叠、剩余压力选择压缩；不是每个阶段固定三步。加强摘要长度和重复信息约束。",
+    "窗口/折叠改变视图后，运行时压缩调度应根据新的实际视图重新判断压力，避免沿用旧窗口的信号；本次未实际触发该压力路径。",
+    "修正后复测同样恢复场景，并增加多轮用户追加、真实长工具结果、不同模型及重复试验。"
+  ],
+  "limitations": [
+    "每种情形仅1次运行，无统计成功率。",
+    "同一个主模型；维护子Agent沿用已发布模板。",
+    "只测主动压缩，未触发70%模型输入阈值自动压缩。",
+    "未充分测试长任务自主折叠/自主压缩时机；短业务任务未用这两项不能判为失败。",
+    "本轮只有单条初始用户输入，跨轮追加约束未覆盖。",
+    "未覆盖所有异常范围、并发、崩溃恢复、跨窗口压缩交错；此前自动化测试不算本次PPE证据。",
+    "22万累计token运行上限由测试设置，失败是该预算下的结果，不能声称协议无法在更高预算完成。"
+  ],
+  "files": [
+    "mapping-evidence.json",
+    "baseline-evidence.json",
+    "guided-evidence.json",
+    "natural-evidence.json"
+  ]
+}

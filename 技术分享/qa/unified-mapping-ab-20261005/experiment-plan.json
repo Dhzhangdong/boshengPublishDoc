@@ -1,0 +1,175 @@
+{
+  "status": "prepared_awaiting_ppe_deployment",
+  "date": "2026-10-05",
+  "purpose": "先排查映射，再检验多轮与宿主维护基线；不是大规模成功率评测。",
+  "deployment": {
+    "protocol": "unified@3",
+    "targets": [
+      "API",
+      "Worker"
+    ],
+    "databaseMigration": false,
+    "frontendRequired": false,
+    "keepExistingProtocolVersions": true
+  },
+  "applicationId": "26850512-edb2-4e49-a390-1f0b1e3f9917",
+  "modelKey": "default",
+  "expectedProviderModel": "qwen3.8-flash",
+  "commonSystemPrompt": "你是一名严谨的任务执行助手。完成用户任务，依据证据保留约束、结论、未知项；不得编造工具执行结果。最终清楚报告完成结果及实际遇到的失败。\n\n{{context_protocol}}",
+  "arms": [
+    {
+      "id": "A",
+      "protocol": "unified",
+      "version": "3",
+      "options": {
+        "stateMessagePlacement": "trailing_assistant"
+      },
+      "rolesForColdInput": [
+        "system",
+        "assistant/header",
+        "user/input",
+        "assistant/state"
+      ]
+    },
+    {
+      "id": "B",
+      "protocol": "unified",
+      "version": "3",
+      "options": {
+        "stateMessagePlacement": "before_history_assistant"
+      },
+      "rolesForColdInput": [
+        "system",
+        "assistant/header",
+        "assistant/state",
+        "user/input"
+      ]
+    },
+    {
+      "id": "C",
+      "protocol": "unified",
+      "version": "3",
+      "options": {
+        "stateMessagePlacement": "trailing_user"
+      },
+      "rolesForColdInput": [
+        "system",
+        "assistant/header",
+        "user/input",
+        "user/state"
+      ]
+    }
+  ],
+  "controls": {
+    "sentinel": {
+      "protocol": "unified",
+      "version": "2",
+      "options": {},
+      "repetitions": 2
+    },
+    "notes": [
+      "v3三组共用位置中立的提示词、工具Schema、完整状态内容、摘要预算及显式绑定。只有state消息位置/角色不同。",
+      "v3 A与旧v2提示词不同；旧v2只是复现哨兵，不纳入单变量映射因果比较。如果v2异常而A/B/C均正常，不能声称改位置解决了问题。",
+      "状态始终是派生数据，不保存为用户输入，不提供system角色。C用于模型兼容性实验，不默认作为产品选项。"
+    ]
+  },
+  "phase1": {
+    "softTokenBudget": 180000,
+    "budgetMeaning": "累计实际输入+输出（含子Run）；达到后不再启动新实验。单轮推理可能跨过限额，不承诺严格计费上限。",
+    "schedule": "分轮交错 A/B/C；冷启动3轮，固定题目完全相同，新建会话与幂等键。穿插旧v2两次哨兵。冷启动通过的组才运行2轮工具续接。",
+    "cold": {
+      "repetitionsPerArm": 3,
+      "maxRunTokens": 12000,
+      "maxCallTreeTokens": 18000,
+      "maxLoopSteps": 3,
+      "maxToolCalls": 2,
+      "text": "简单核算即可：预算9800元，A项4200元，B项5300元。回答总价、余额、是否超预算。无需保存供后续追问的阶段成果。",
+      "passCriteria": [
+        "总价9500、余额300、未超预算",
+        "没有无关任务内容",
+        "0工具调用",
+        "正常交付最终答复"
+      ]
+    },
+    "afterTool": {
+      "repetitionsPerPassingArm": 2,
+      "maxRunTokens": 24000,
+      "maxCallTreeTokens": 30000,
+      "maxLoopSteps": 4,
+      "maxToolCalls": 2,
+      "text": "隔离的工具续接验收：只调用一次 context_window_list，确认当前已有主窗口 main；收到结果后直接回答“主窗口存在；总价9500元，预算9800元，余额300元”。不要创建、切换或修改窗口，不调用其他工具，不重复核验。",
+      "passCriteria": [
+        "恰好1次context_window_list且成功",
+        "工具调用/结果在下一请求中完整配对",
+        "读取结果后直接答复，main及9500/9800/300正确",
+        "无状态修改或重复验证"
+      ]
+    },
+    "gate": "一组全部3次冷启动和2次工具续接通过才进入多轮。任何答非所问、错写或工具协议错误都淘汰该组；中止该组剩余任务并保留证据，不通过增加提示词或调预算修饰结果。若全组失败，停止多轮。",
+    "evidence": [
+      "immutable AgentVersion配置与内容hash",
+      "每轮providerRequest、模型/账户ID、system/tools/state内容hash",
+      "原始输入/最终答复/工具参数与完整结果",
+      "推理与工具数、实际token用量、是否存在错误后重试"
+    ],
+    "interpretation": "3+2次通过只是继续实验门槛，不是生产稳定性证明。模型随机性、账户变化、快照内容不一致要明确记录；不做显著性或通用成功率声明。"
+  },
+  "phase2": {
+    "condition": "至少一个v3组通过phase1；选通过组中总token较低者，平局优先before_history_assistant以避免派生消息冒充新用户任务。",
+    "agentType": "conversation",
+    "transport": "每个实验组同一根会话，第一轮run_start，后续等待canSubmitInput后用最新rootSession.revision调用run_send_input；不能用3个独立run_start假装多轮。",
+    "repetitionsPerArm": 2,
+    "softTokenBudget": 260000,
+    "maxRunTokensPerTurn": 60000,
+    "maxCallTreeTokensPerTurn": 90000,
+    "maxLoopStepsPerTurn": 12,
+    "maxToolCallsPerTurn": 10,
+    "arms": [
+      "phase1通过的v3映射：模型自行管理窗口/折叠/压缩",
+      "prefix@2宿主维护基线：保留普通会话历史，不暴露手动上下文管理工具，由宿主按容量维护"
+    ],
+    "baselineLimitation": "这是宿主维护普通对话的最低复杂度基线，不是已经实现的阶段意图自动切窗系统。本小样本很可能不会触发自动压缩；不能据此声称自动压缩或通用阶段路由经过验证。",
+    "turns": [
+      "项目ROUND-7429，预算上限9800元。供应商A项目4200元、B项目5300元，两项都需要购买。现在只做报价核对，保存本阶段结论供后续追问，报告总价、余额与是否超预算。禁止外部写入、下单或付款。",
+      "现在进入交付排期阶段：交付日期2026-10-12，负责人林舟，凭据SCHEDULE-2086。保存排期供后续复核，报告排期即可；报价事实暂不修改。",
+      "预算上限现在正式改为9000元，其他事实和禁令不变。请返回报价阶段复核：明确旧预算9800元只是历史值、新预算9000元才是当前约束；保留原报价证据，不重新询价或改写报价数字。给出新结论、超出或剩余金额，并复述交付日期、负责人和凭据。不得自动放宽预算或执行采购。"
+    ],
+    "expectedFinal": {
+      "currentBudget": 9000,
+      "historicalBudget": 9800,
+      "quoteA": 4200,
+      "quoteB": 5300,
+      "total": 9500,
+      "overBudget": 500,
+      "decision": "超预算，不批准采购执行",
+      "date": "2026-10-12",
+      "owner": "林舟",
+      "evidence": "SCHEDULE-2086"
+    },
+    "passCriteria": [
+      "新预算覆盖旧约束；9800只能作为已失效历史值",
+      "原报价不变，总额9500、超500",
+      "排期/负责人/证据全部保留",
+      "无外部行动、无无限重做或错误状态修改",
+      "审阅者按原始消息和快照评定，不以Agent自报已完成判分"
+    ],
+    "stopRule": "新约束丢失、阶段内容误写或预算耗尽即记失败；不抬高预算补跑。同一问题复现后停止扩测。",
+    "decision": "仅在正确性通过且相对基线带来可解释收益时保留自主组合方案；若成本更高、重复更多而无能力收益，默认转向宿主管理。两个重复样本只能作为方向性筛选，不能推广到长历史任务。"
+  },
+  "notIncluded": [
+    "真实大量业务工具输出的自主折叠时机",
+    "70%容量阈值自动压缩效果",
+    "跨模型稳定性",
+    "通用阶段意图路由器"
+  ],
+  "localValidation": {
+    "status": "passed",
+    "unitTestsPassed": 197,
+    "architectureTestsPassed": 1,
+    "postgresRedisIntegrationCasesPassed": 5,
+    "solutionBuildWarnings": 0,
+    "solutionBuildErrors": 0,
+    "ppeExperimentsStarted": false,
+    "meaning": "真实PostgreSQL/Redis与脚本化模型只能验证机制，不代表真实LLM效果"
+  }
+}

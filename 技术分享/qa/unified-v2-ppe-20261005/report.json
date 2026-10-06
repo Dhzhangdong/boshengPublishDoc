@@ -1,0 +1,260 @@
+{
+  "date": "2026-10-05",
+  "environment": "ppe",
+  "application": "agentcoreTest",
+  "providerModel": "qwen3.8-flash",
+  "verdict": "暂不建议推广unified@2：窗口防误写有效，但简单任务出现可复现的答非所问；恢复后重复工作与成本问题仍未解决。",
+  "scope": "真实MCP启动7个根Run（v2六个、v1对照一个）和2个维护子Run，均已结束；另有1个零token排队Run为调整实例并行而取消，不计入实验。",
+  "roots": [
+    {
+      "case": "原预算功能验收",
+      "runId": "c735b807-d5d9-4c6c-a9be-278d034bb802",
+      "protocol": "unified@2",
+      "status": "failed",
+      "steps": 29,
+      "toolCalls": 29,
+      "selfTokens": 222716,
+      "treeTokens": 266978,
+      "error": "agent_run_token_limit_exceeded"
+    },
+    {
+      "case": "40万预算功能补测",
+      "runId": "fc7bcc3d-9988-4c4d-b5d9-fd35071b670d",
+      "protocol": "unified@2",
+      "status": "completed",
+      "steps": 29,
+      "toolCalls": 28,
+      "selfTokens": 235721,
+      "treeTokens": 282395,
+      "error": null
+    },
+    {
+      "case": "自主三阶段业务任务",
+      "runId": "6da85037-0e8e-4239-b6af-6d0213f23e68",
+      "protocol": "unified@2",
+      "status": "completed",
+      "steps": 19,
+      "toolCalls": 18,
+      "selfTokens": 169508,
+      "treeTokens": 169508,
+      "error": null
+    },
+    {
+      "case": "窗口误写负向测试",
+      "runId": "5970d2cf-6a4d-4668-a533-f81f3647b018",
+      "protocol": "unified@2",
+      "status": "completed",
+      "steps": 16,
+      "toolCalls": 15,
+      "selfTokens": 92455,
+      "treeTokens": 92455,
+      "error": null
+    },
+    {
+      "case": "v2短任务首测",
+      "runId": "176dcf9b-b8f5-4aee-8f90-f40e16a89632",
+      "protocol": "unified@2",
+      "status": "completed",
+      "steps": 1,
+      "toolCalls": 0,
+      "selfTokens": 4208,
+      "treeTokens": 4208,
+      "error": null
+    },
+    {
+      "case": "v2短任务复测",
+      "runId": "db996b35-3839-4821-9ad5-e0732fab1a7c",
+      "protocol": "unified@2",
+      "status": "completed",
+      "steps": 1,
+      "toolCalls": 0,
+      "selfTokens": 5418,
+      "treeTokens": 5418,
+      "error": null
+    },
+    {
+      "case": "v1短任务对照",
+      "runId": "66032ef2-57ee-4381-aae1-e646d694497b",
+      "protocol": "unified@1",
+      "status": "completed",
+      "steps": 1,
+      "toolCalls": 0,
+      "selfTokens": 3616,
+      "treeTokens": 3616,
+      "error": null
+    }
+  ],
+  "totalTreeTokens": 824578,
+  "configuration": {
+    "agentId": "9886716b-e606-432c-bfa3-102c99e282a1",
+    "defaultMaxRunTokens": 220000,
+    "defaultMaxCallTreeTokens": 350000,
+    "expandedMaxRunTokens": 400000,
+    "expandedMaxCallTreeTokens": 550000,
+    "maxLoopSteps": 40,
+    "maxToolCalls": 45,
+    "contextProtocolOptionsJson": "{}",
+    "toolResultPreviewEnabled": false,
+    "checkpointMaxCharacters": 3000,
+    "explicitMaintainerVersion": "1441fbf6-e354-4c9c-a844-a97472c1223a",
+    "draftRestoredToOriginalLimits": true,
+    "codeModified": false
+  },
+  "criticalFindings": [
+    {
+      "priority": "阻断",
+      "area": "简单任务答非所问",
+      "evidence": "相同9800/4200/5300题，v2首测回答42+57=99，复测回答无关企业所得税题；v1对照正确给出9500、余额300、未超预算。3次均同一模型定义、同一模型账户。v2两次providerRequest均保留完整正确用户原文，状态为空，无其他任务消息；均0工具调用。",
+      "requestRoleOrders": {
+        "v2": [
+          "system",
+          "assistant(header)",
+          "user",
+          "assistant(state)"
+        ],
+        "v1": [
+          "system",
+          "assistant(header)",
+          "user"
+        ]
+      },
+      "attribution": "末尾assistant/context_state是优先排查的映射差异，但v1/v2同时有提示词和工具Schema差异。尚未做只改变state位置/role的单变量实验，不能据此证明唯一根因，也未验证其他模型。"
+    },
+    {
+      "priority": "高",
+      "area": "恢复后仍误判方向与重复工作",
+      "evidence": "原预算功能Run返回main后生成expectedWindowId=alpha的memory_set，被guard拦截；负向测试返回main后再次自发生成同类错误，被拦截。两次功能Run恢复alpha后都重复open已经所在窗口；最终交接已要求直接报告，仍额外回读。"
+    },
+    {
+      "priority": "高",
+      "area": "LLM把当前窗口视图误认为本轮完整执行历史",
+      "evidence": "guard Run实际16次推理/15次工具调用；最终报告把同一Run中自己在其他窗口执行的步骤描述为非本轮新调用，并混排main中的旧open与返回main后的被拒绝memory_set。底层原始时间线完整，映射子集与模型的运行范围认知存在偏差。"
+    },
+    {
+      "priority": "中",
+      "area": "维护子Agent仍不稳定遵守分页",
+      "evidence": "原预算维护读取cursor0、12000；第二页hasMore=false/nextCursor15198，仍两次读24000，得到maintenance_cursor_gap。提交最终成功，完整覆盖并未丢失。扩大预算补测有0→8000→12000的重叠续读；未报业务错误。维护模板本轮未改。"
+    },
+    {
+      "priority": "中",
+      "area": "自主业务推理偏差",
+      "evidence": "预算及拒绝10/20上线等核心结论正确；却新增未授权的A最乐观10/21验收假设，把验收后付款扩展成上线前付款闭环要求，并宣称日期调整到≥10/22时A是唯一可行候选（仅支持A更优，不能排除更晚日期下B可行）。这些是内容质量问题，不能直接归因于上下文丢失。"
+    }
+  ],
+  "mechanismChecks": [
+    {
+      "area": "部署与实际LLM消息",
+      "result": "通过",
+      "evidence": "Worker请求protocolVersion=2、qwen3.8-flash；state位于映射末尾；4个写/切换工具Schema都要求expectedWindowId；open还要求input。"
+    },
+    {
+      "area": "原始消息→LLM视图",
+      "result": "通过已测机制",
+      "evidence": "序列为system→assistant/context_header→选中原始历史/折叠→assistant/context_state；派生state没有sourceMessageId/index，原始会话中context_state数量为0。"
+    },
+    {
+      "area": "窗口隔离与恢复",
+      "result": "通过已测机制",
+      "evidence": "进入新窗口仅当前header、本Run用户原文及派生state；beta无alpha checkpoint；恢复alpha加载其1819字符checkpoint，memory与初始写入逐字一致。补测亦保持原memory。"
+    },
+    {
+      "area": "折叠",
+      "result": "通过",
+      "evidence": "原预算Run原始#7–8完整window_read调用/结果被一个assistant/context_fold替换，projectionSource保留两条原消息ID；原始消息未删除。"
+    },
+    {
+      "area": "主动前缀压缩与折叠原文",
+      "result": "通过",
+      "evidence": "coveredThrough=16；压缩后来源原文索引为用户0及维护调用/结果17–18；fold_list compressed false→true；两次fold_read均含ALPHA-EVIDENCE-6913且hasMore=false。"
+    },
+    {
+      "area": "误写拒绝不变更状态，错误后继续",
+      "result": "通过机制，LLM步骤遵循部分失败",
+      "evidence": "guard_beta基线写入revision5，错误expectedWindowId=guard_alpha返回mismatch/revision仍5；下一推理快照memory仍BETA-KEEP-926，回读alpha仍ALPHA-KEEP-173；正确写入revision6且回读BETA-RECOVERED-926，Run最终完成。模型遗漏了覆盖前单独window_read(beta)，由宿主快照补充验证，不能声称模型完整遵循全部测试步骤。"
+    },
+    {
+      "area": "短任务不滥用上下文工具",
+      "result": "零工具调用，但整体业务失败",
+      "evidence": "v2两次均0工具，均答错任务，不能把零工具判成整体通过。"
+    },
+    {
+      "area": "自主分层选择",
+      "result": "部分观察",
+      "evidence": "业务任务自主使用3个阶段窗口，未做fold/maintenance；该任务无需压力管理，未使用这两项合理。但还未证明面对真实大量工具结果时能自主选对折叠/压缩时机。"
+    }
+  ],
+  "costObservations": {
+    "functionalV1": {
+      "status": "failed",
+      "selfTokens": 224669,
+      "treeTokens": 268784,
+      "steps": 28
+    },
+    "functionalV2": {
+      "status": "failed",
+      "selfTokens": 222716,
+      "treeTokens": 266978,
+      "steps": 29
+    },
+    "functionalV2Expanded": {
+      "status": "completed",
+      "selfTokens": 235721,
+      "treeTokens": 282395,
+      "steps": 29,
+      "toolCalls": 28
+    },
+    "naturalV1": {
+      "selfTokens": 205815,
+      "steps": 17,
+      "toolCalls": 16
+    },
+    "naturalV2": {
+      "selfTokens": 169508,
+      "steps": 19,
+      "toolCalls": 18
+    },
+    "compression": {
+      "inputBefore": 8342,
+      "inputAfter": 6365,
+      "checkpointCharacters": 1819,
+      "maintenanceChildTokens": 44262
+    },
+    "smallFold": {
+      "inputBefore": 5936,
+      "inputAfter": 6031,
+      "note": "包含新增折叠调用/结果，并非纯内容替代长度对比；短片段折叠仍可能净增输入。"
+    },
+    "interpretation": "这些是累计输入+输出token而非单次上下文长度。短业务单样本成本下降约17.6%，调用反增；不能得出稳定节省率。扩大预算是另一独立采样，不能断言原失败Run仅需提高上限便得到同一路径。"
+  },
+  "recommendations": [
+    "首先做单变量消息映射A/B：保持v2提示词、工具Schema、模型相同，仅改变派生state的放置位置/角色，验证简单任务与有tool_result的下一轮。避免未经验证就把整块含模型生成handoff的内容提升为高优先级系统指令；区分宿主结构化状态与不可信任务文本。",
+    "对窗口控制历史做明确的视图设计：保留原始日志与调用/结果配对，同时避免旧open结果像当前动作一样驱动模型；提供简短可核验的跨窗口进度/事件索引，区分Run与当前窗口，而不是继续堆手写摘要。",
+    "保留expectedWindowId校验；它已拦住实际自然误写。但同窗口的错误内容写入不会被此校验识别，不能把它视为语义正确性保证。",
+    "收紧维护分页：只按nextCursor续读，hasMore=false停止；摘要少存流水账；降低公共memory/result/checkpoint重复。之后再做真实长结果、自动压力触发、跨轮约束和多模型测试。"
+  ],
+  "limitations": [
+    "样本很少，无统计稳定性结论；同一主模型，v1短任务对照仅1次。",
+    "主任务是隔离的上下文工具测试，未绑定外部业务写工具；业务材料为合成固定输入。",
+    "功能任务显式要求折叠/压缩，不能证明模型自然选择时机；未覆盖70%容量阈值自动压缩。",
+    "未覆盖多轮用户追加、大型真实工具输出、并发恢复或所有非法折叠边界。",
+    "providerRequest快照证明应用准备发送的请求含正确输入；未取得供应商内部执行记录。代码审查显示请求发送与快照使用同一ProviderRequestJson。",
+    "v2多个改动一起发布，当前对照不足以隔离具体因果。"
+  ],
+  "files": [
+    "functional-evidence.json",
+    "mapping-evidence.json",
+    "expanded-evidence.json",
+    "natural-evidence.json",
+    "guard-evidence.json",
+    "short-evidence.json",
+    "short-input-snapshot.json",
+    "shortrepeat-evidence.json",
+    "shortv1-evidence.json"
+  ],
+  "administrativeCancellation": {
+    "runId": "23fe5b6a-e072-4bc8-817c-5a1a90a9fa82",
+    "status": "cancelled",
+    "tokens": 0,
+    "reason": "排队补测移至另一隔离实例并行，未执行推理，不计入测试成败。"
+  }
+}

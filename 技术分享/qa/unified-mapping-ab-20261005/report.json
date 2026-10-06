@@ -1,0 +1,450 @@
+{
+  "title": "unified@3 PPE 消息映射与三轮任务对照",
+  "date": "2026-10-05",
+  "status": "planned_live_trials_completed",
+  "environment": {
+    "applicationId": "26850512-edb2-4e49-a390-1f0b1e3f9917",
+    "instanceId": "codex-mapping-ab-20261005",
+    "model": "qwen3.8-flash",
+    "modelDefinitionIds": [
+      "940c7d44-f142-4c0f-b90c-3a3792db15ad"
+    ],
+    "modelAccountIds": [
+      "752561ad-847b-40ef-9830-4327bdbbee62"
+    ]
+  },
+  "conclusion": "保留底层上下文能力和实验协议；当前证据不足以将LLM自主组合管理设为默认。先以普通历史/宿主维护为基线，把多份记忆的权威性与失效规则收敛，再评估是否继续增加自治程度。",
+  "phase1": {
+    "cases": [
+      {
+        "runId": "afc89ce0-5b37-4675-82c3-2e5cf3c4286d",
+        "arm": "A",
+        "phase": "cold",
+        "rep": 1,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4236,
+        "evidenceFile": "A-cold-1.json"
+      },
+      {
+        "runId": "c4fd595d-dbb0-44d2-9ac1-d5fbdb249405",
+        "arm": "B",
+        "phase": "cold",
+        "rep": 1,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4224,
+        "evidenceFile": "B-cold-1.json"
+      },
+      {
+        "runId": "1e069e21-cb51-41b1-93b3-3f14f999d67e",
+        "arm": "C",
+        "phase": "cold",
+        "rep": 1,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4284,
+        "evidenceFile": "C-cold-1.json"
+      },
+      {
+        "runId": "40b167eb-05c4-481d-af35-08d1e6e61708",
+        "arm": "V2",
+        "phase": "cold",
+        "rep": 1,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4225,
+        "evidenceFile": "V2-cold-1.json"
+      },
+      {
+        "runId": "e8613648-90f4-47fd-83da-3210887191fc",
+        "arm": "A",
+        "phase": "cold",
+        "rep": 2,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4254,
+        "evidenceFile": "A-cold-2.json"
+      },
+      {
+        "runId": "7e82174b-342a-4aff-b0ae-f0c3884dfee0",
+        "arm": "B",
+        "phase": "cold",
+        "rep": 2,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4216,
+        "evidenceFile": "B-cold-2.json"
+      },
+      {
+        "runId": "3fca97d5-4b31-434d-9f86-c19ebd86608f",
+        "arm": "C",
+        "phase": "cold",
+        "rep": 2,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4245,
+        "evidenceFile": "C-cold-2.json"
+      },
+      {
+        "runId": "a079e7ad-06c6-473a-a355-c8f7a582e58d",
+        "arm": "V2",
+        "phase": "cold",
+        "rep": 2,
+        "pass": false,
+        "reason": "请求含预算题，回复声称无任务",
+        "tokens": 4580,
+        "evidenceFile": "V2-cold-2.json"
+      },
+      {
+        "runId": "d3559707-dd04-4c63-a9a6-b73440f951e8",
+        "arm": "A",
+        "phase": "cold",
+        "rep": 3,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4251,
+        "evidenceFile": "A-cold-3.json"
+      },
+      {
+        "runId": "d9cdd22b-3741-4d13-888b-0609653d6fa2",
+        "arm": "B",
+        "phase": "cold",
+        "rep": 3,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4226,
+        "evidenceFile": "B-cold-3.json"
+      },
+      {
+        "runId": "a50626a8-4288-49b3-ab03-5ff294fa1273",
+        "arm": "C",
+        "phase": "cold",
+        "rep": 3,
+        "pass": true,
+        "reason": "9500、余额300、未超预算，0工具",
+        "tokens": 4245,
+        "evidenceFile": "C-cold-3.json"
+      },
+      {
+        "runId": "080852e5-1c7a-451d-a900-b97e5127c26e",
+        "arm": "A",
+        "phase": "tool",
+        "rep": 1,
+        "pass": true,
+        "reason": "一次list成功，完整答复main/9500/9800/300",
+        "tokens": 8453,
+        "evidenceFile": "A-tool-1.json"
+      },
+      {
+        "runId": "21fc6ffc-1e35-4755-b53b-34a8cb732705",
+        "arm": "B",
+        "phase": "tool",
+        "rep": 1,
+        "pass": false,
+        "reason": "只调用一次list且成功，但最终漏掉明确要求的余额300，未通过完整答复门槛",
+        "tokens": 8675,
+        "evidenceFile": "B-tool-1.json"
+      },
+      {
+        "runId": "e71779e9-f363-4e36-9450-20e1814d40d7",
+        "arm": "C",
+        "phase": "tool",
+        "rep": 1,
+        "pass": true,
+        "reason": "一次list成功，完整答复main/9500/9800/300",
+        "tokens": 8433,
+        "evidenceFile": "C-tool-1.json"
+      },
+      {
+        "runId": "d579dabb-fb4a-4378-9b06-7f960cad0793",
+        "arm": "A",
+        "phase": "tool",
+        "rep": 2,
+        "pass": true,
+        "reason": "一次list成功，完整答复main/9500/9800/300",
+        "tokens": 8612,
+        "evidenceFile": "A-tool-2.json"
+      },
+      {
+        "runId": "dafbe88e-46c1-4e01-9f5e-34397efd0a65",
+        "arm": "C",
+        "phase": "tool",
+        "rep": 2,
+        "pass": true,
+        "reason": "一次list成功，完整答复main/9500/9800/300",
+        "tokens": 8437,
+        "evidenceFile": "C-tool-2.json"
+      }
+    ],
+    "totalTokens": 89596,
+    "isolation": {
+      "systemIdentical": true,
+      "toolsIdentical": true,
+      "stateContentIdentical": true
+    },
+    "selectedArm": "C",
+    "selectionNote": "A和C均5项通过；C=29644，A=29806，差162 tokens，仅按预注册规则选C，不是稳定效率优势。",
+    "interpretation": "A保留trailing_assistant也全部通过，不能把旧v2错误简单归因于末尾assistant。v3所有组包括A都改成位置中性提示；v2是哨兵而非严格单变量对照。"
+  },
+  "phase2": {
+    "cases": [
+      {
+        "arm": "C",
+        "rep": 1,
+        "pass": false,
+        "businessTurns": [
+          "pass",
+          "fail",
+          "diagnostic_only_core_pass"
+        ],
+        "stateConsistency": false,
+        "reason": "第2轮仅回显空Agent Inputs；第3轮补答正确但公共记忆仍保留旧预算9800为长期约束，与窗口记忆9000冲突。",
+        "notes": [
+          "工具成功3次，全在main：task_memory_set一次、window_memory_set两次。未切窗。",
+          "阶段记忆加入2024-ROUND-7429和价格含税/最终价假设，非原始证据。"
+        ],
+        "runId": "f691f1e9-74bb-4bac-ba48-205ca626e4e0",
+        "agentVersionId": "651cc99c-25c9-49da-aedd-35ab1fed9ace",
+        "tokens": 39757,
+        "loopSteps": 6,
+        "toolCalls": 3,
+        "evidenceFiles": [
+          "C-multi-1-turn1.json",
+          "C-multi-1-turn2.json",
+          "C-multi-1-turn3.json"
+        ]
+      },
+      {
+        "arm": "Host",
+        "rep": 1,
+        "pass": true,
+        "passScope": "预注册核心事实/约束",
+        "businessTurns": [
+          "pass",
+          "pass",
+          "pass"
+        ],
+        "reason": "9000当前、9800历史、9500总价、超500、排期3要素均正确；零工具。",
+        "qualityNotes": [
+          "把两个项目都标为供应商A；题面‘供应商A项目4200元、B项目5300元’本身有归属歧义，不能单独作为协议失败证据。",
+          "冗长、添加未要求的未知项与建议；核心通过不等于无质量问题。"
+        ],
+        "runId": "91eac0b9-4e1a-40d4-8bb9-d3e25a8fa8ce",
+        "agentVersionId": "6debf7a9-a61f-4f8d-a485-c539191c5a5f",
+        "tokens": 8299,
+        "loopSteps": 3,
+        "toolCalls": 0,
+        "evidenceFiles": [
+          "Host-multi-1-turn1.json",
+          "Host-multi-1-turn2.json",
+          "Host-multi-1-turn3.json"
+        ]
+      },
+      {
+        "arm": "Host",
+        "rep": 2,
+        "pass": true,
+        "passScope": "预注册核心事实/约束",
+        "businessTurns": [
+          "pass",
+          "pass",
+          "pass"
+        ],
+        "reason": "核心事实/约束全部保留，零工具。",
+        "qualityNotes": [
+          "再次把两个项目都标为供应商A，存在题面歧义。",
+          "预算表中出现2026-…占位式文本；对未知项和建议扩写过多。"
+        ],
+        "runId": "e33e7974-8b92-450f-8bcd-8f7d6e02d26a",
+        "agentVersionId": "6bfc0e95-6947-4d56-8463-b19345d4cace",
+        "tokens": 9100,
+        "loopSteps": 3,
+        "toolCalls": 0,
+        "evidenceFiles": [
+          "Host-multi-2-turn1.json",
+          "Host-multi-2-turn2.json",
+          "Host-multi-2-turn3.json"
+        ]
+      },
+      {
+        "arm": "C",
+        "rep": 2,
+        "pass": true,
+        "passScope": "预注册核心事实/约束；不代表严格成本上限通过",
+        "businessTurns": [
+          "pass",
+          "pass",
+          "pass"
+        ],
+        "stateConsistency": true,
+        "reason": "三轮业务结果正确；公共记忆改为9000当前/9800历史。创建排期和新报价复核窗口，未恢复已有报价窗口。",
+        "notes": [
+          "8次工具均成功：task_memory_set×3、window_open×2、window_memory_set×2、window_search×1。无折叠/压缩。",
+          "最终余额写0但明确超出500；按预注册超支判断通过，数学有符号余额应为-500。",
+          "写记忆时提前称已汇报；最终报告到达前该描述不准确。",
+          "排期窗口保留带旧预算的上一阶段引用，未作为当前公共约束；没有回到排期窗口验证其后续解释。"
+        ],
+        "budget": {
+          "configuredMaxRunTokens": 60000,
+          "actualTokens": 64104,
+          "lastInferenceTokens": 6656,
+          "tokensBeforeLastInference": 57448,
+          "strictCapMet": false,
+          "runtimeFailed": false,
+          "explanation": "Runtime允许已获准的最后推理超出剩余额度并保留正常结束答复；没有抬高配置或继续发第4轮。"
+        },
+        "runId": "1dee2794-c5c5-4fd7-b2a0-79e951207ff3",
+        "agentVersionId": "da9b2afa-a480-4f00-a9e4-98c57d6004d5",
+        "tokens": 64104,
+        "loopSteps": 11,
+        "toolCalls": 8,
+        "evidenceFiles": [
+          "C-multi-2-turn1.json",
+          "C-multi-2-turn2.json",
+          "C-multi-2-turn3.json"
+        ]
+      }
+    ],
+    "corePasses": {
+      "C": "1/2",
+      "Host": "2/2"
+    },
+    "tokens": 121260,
+    "softBudget": 260000,
+    "costBasis": "每个根Run的最终累计input+output，包含C重复1已失败后的诊断第3轮；不叠加每轮累计读数。不是缓存折扣后的计费金额。",
+    "comparison": {
+      "C_total": 103861,
+      "Host_total": 17399,
+      "ratio": 5.969366055520433,
+      "successfulRepeat2Ratio": 7.044395604395604
+    },
+    "scope": "比较整套协议与最小普通历史基线，system协议提示、暴露工具、上下文投影均不同，不能把成本/质量差归因于某一个映射因素。"
+  },
+  "totalTokens": 210856,
+  "evidenceHighlights": [
+    {
+      "finding": "输入已送达但回复只回显元信息",
+      "file": "C-multi-1-turn2.json",
+      "inferenceId": "5b918868-34ec-4dee-903b-1b9e4b3ccb7b",
+      "step": 4,
+      "observation": "实际providerRequest包含完整SCHEDULE-2086用户排期消息；最终assistant只输出空Agent Inputs块。",
+      "causality": "说明此次偏离发生在输入包含任务的条件下，尚不能断言由某一角色/位置单独导致。"
+    },
+    {
+      "finding": "公共记忆与窗口记忆冲突",
+      "file": "C-multi-1-turn3.json",
+      "inferenceId": "34fc1c49-db0e-4bd7-83f7-bf08576ac50a",
+      "step": 6,
+      "observation": "header公共任务约束仍写预算9800长期有效；同一header窗口memory写9000当前、9800历史。最终答案虽正确，派生状态不一致。"
+    },
+    {
+      "finding": "自主切窗成功但路径不稳定",
+      "file": "C-multi-2-turn3.json",
+      "observation": "第二次先main→schedule-7429，再搜索报价并创建quote-review-7429；未返回main，未恢复已完成窗口。全部上下文工具业务返回success=true。"
+    },
+    {
+      "finding": "源事实表述质量",
+      "observation": "两组均有额外展开；C首次记忆加入2024编号及含税假设。Host把两项都归供应商A，但原题供应商/项目归属有歧义，该项只作措辞质量记录，不作为严格失败判据。"
+    }
+  ],
+  "coverage": {
+    "exercised": [
+      "冷启动预算题",
+      "一次window_list后的工具续接",
+      "真实同一会话三轮输入",
+      "task_memory_set",
+      "window_memory_set",
+      "window_open创建/切换新窗口",
+      "window_search",
+      "变更约束覆盖旧预算"
+    ],
+    "notExercised": [
+      "恢复已有/已完成窗口",
+      "窗口complete",
+      "消息fold_create/fold_read",
+      "前缀压缩与维护子Agent",
+      "长历史容量阈值触发",
+      "跨模型泛化",
+      "监控Agent/经验路由方案"
+    ]
+  },
+  "limitations": [
+    "每映射仅3个冷启动+最多2个续接；每多轮组只有2次同题重复，不构成统计显著性或普遍可靠性结论。",
+    "phase1 A与C均通过，不支持‘末尾assistant必然有问题’。v2与v3提示词也变化，v2只作为漂移哨兵。",
+    "prefix@2基线保留普通历史；本轮没有自动压缩，也没有实现阶段意图自动路由，不能宣称宿主自动窗口方案已经验证。",
+    "没有调用三个复杂能力的完整组合；未调用折叠/压缩符合短任务提示，不能把未触发本身当作失败。",
+    "当前Run全部用户原文跨窗口可见，最终回忆正确不能证明仅靠摘要或记忆即可恢复。",
+    "工具接口成功与LLM正确选择时机、维护语义一致性是不同维度。"
+  ],
+  "deviations": [
+    "接口run_send_input复用Run，60000自身token/12步/10工具上限约束整个会话，不是每轮；两组保持相同冻结配置，未放宽。",
+    "C重复1第2轮仅回显Agent Inputs空块。读取结果与发送第3轮在同一次编排调用中完成，模型审阅前第3轮已发出；该会话已判失败，第3轮只作诊断，不用于挽回通过。",
+    "第二组初始排队超过10分钟。源码显示waiting_for_input仍占Agent调度并发名额；在已保存所有第一组证据后取消第一组开放会话释放名额。清理取消不计模型失败。",
+    "取消第一组开放会话后，第二组立即启动，支持并发名额被waiting_for_input占用的诊断；无需重发或修改PPE。",
+    "C重复2最后一次推理前累计57448<60000，最后调用6656使总额64104；源码明确允许正常结束答复超出剩余额度。业务核心通过，但不能称严格60000成本上限通过。"
+  ],
+  "nextDirection": [
+    "不继续用无边界提示词微调和重复重跑追求单次成功；保持此轮结果不变。",
+    "先定义当前约束的唯一权威来源、版本与失效关系；历史摘要不能继续宣称被新输入取代的约束长期有效。",
+    "若后续继续实现，优先减少主Agent需要决定的上下文动作，将机械折叠/容量维护交给宿主，复杂窗口作为有明确收益的可选能力。"
+  ],
+  "cleanup": {
+    "description": "取证后取消4个已完成答题但仍waiting_for_input的测试会话，以释放Agent并发名额；不删除会话历史，不改变判分。",
+    "roots": [
+      {
+        "runId": "f691f1e9-74bb-4bac-ba48-205ca626e4e0",
+        "cancellationResponse": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"cancellationRequested\":true,\"rootSessionId\":\"0490594d-6347-42b3-b6d7-cf51454a0150\"}"
+            }
+          ]
+        }
+      },
+      {
+        "runId": "91eac0b9-4e1a-40d4-8bb9-d3e25a8fa8ce",
+        "cancellationResponse": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"cancellationRequested\":true,\"rootSessionId\":\"a08ca3f4-b03e-46c8-9ae9-b32a79cfcd43\"}"
+            }
+          ]
+        }
+      },
+      {
+        "runId": "e33e7974-8b92-450f-8bcd-8f7d6e02d26a",
+        "cancellationResponse": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"cancellationRequested\":true,\"rootSessionId\":\"d1b1c4f7-76c8-4bec-a2d7-32b76206b96e\"}"
+            }
+          ]
+        }
+      },
+      {
+        "runId": "1dee2794-c5c5-4fd7-b2a0-79e951207ff3",
+        "cancellationResponse": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"cancellationRequested\":true,\"rootSessionId\":\"bc5aa77d-4f4e-48b7-90b2-5b29b6ce5df7\"}"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "sourceReferences": [
+    "AgentCoreService/src/AgentCore.Runtime/Loop/AgentLoopDecisionEngine.cs:97",
+    "AgentCoreService/src/AgentCore.Infrastructure/Events/EventTaskDispatcher.cs:64"
+  ],
+  "artifacts": {
+    "preRegisteredPlan": "experiment-plan.json",
+    "coldRequestHashes": "cold-request-hashes.json",
+    "fullEvidence": "同目录16个单轮和12个多轮阶段JSON，包含原始消息、工具轨迹、不可变Agent版本和实际provider请求。"
+  }
+}

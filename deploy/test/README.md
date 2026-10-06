@@ -42,6 +42,20 @@ location /doc/ {
 
 产品根目录 robots.txt 可增加 `Sitemap: https://aireceptionist.bosheng.online/doc/sitemap.xml`，或将文档章节纳入官网 sitemap。允许抓取公开 HTML，不要给 `/doc/` 加 noindex。文档 PDF 的 noindex 响应头由文档服务提供。
 
+## 技术分享 `/articles/`
+
+技术分享没有产品级目录。将 `articles.json` 配置的公开域名中的 `/articles/` 直接映射到文档服务同名目录：
+
+```nginx
+location = /articles { return 301 /articles/; }
+location /articles/ {
+    proxy_pass http://192.168.1.85:15120/articles/;
+    proxy_set_header Host $host;
+}
+```
+
+同一服务和 CD 镜像同时包含文章与产品手册，无需增加容器或端口。公开域名的 robots.txt 可添加 `Sitemap: https://aireceptionist.bosheng.online/articles/sitemap.xml`（更换域名时按配置替换）。CD 健康探测会检查文章列表与最新文章的 PDF。
+
 ## 核对
 
 ```bash

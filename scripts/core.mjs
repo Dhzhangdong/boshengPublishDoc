@@ -17,7 +17,7 @@ export function fileHistory(root, file, strict = false) {
 export function displayTime(value) {
   return value ? new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(new Date(value)) : '尚未提交';
 }
-export async function discover(root, strict = false) {
+export async function discover(root, strict = false, validateAllDirectories = true) {
   if (git(root, ['rev-parse', '--is-shallow-repository']) === 'true') throw new Error('需要完整 Git 历史；请使用 fetch-depth: 0 或 git fetch --unshallow');
   const config = JSON.parse(await fs.readFile(path.join(root, 'products.json'), 'utf8'));
   const products = [], ids = new Set(), origins = new Set(), directories = new Set();
@@ -44,13 +44,13 @@ export async function discover(root, strict = false) {
     if (!chapters.length) throw new Error(`产品无编号章节：${p.directory}`);
     products.push({ ...p, directory, chapters });
   }
-  for (const entry of await fs.readdir(path.join(root, '产品手册'), { withFileTypes: true })) {
+  for (const entry of validateAllDirectories ? await fs.readdir(path.join(root, '产品手册'), { withFileTypes: true }) : []) {
     if (entry.isDirectory() && !directories.has(entry.name) && (await fs.readdir(path.join(root, '产品手册', entry.name))).some(numbered)) throw new Error(`新产品需要在 products.json 登记公开地址：${entry.name}`);
   }
   if (!products.length) throw new Error('至少配置一个产品');
   return products;
 }
-export const chapterURL = (p, c) => `${p.origin}${p.basePath}${c.key}.html`;
+export const chapterURL = (p, c) => `${p.origin}${p.basePath}${encodeURIComponent(c.key)}.html`;
 export const excerpt = source => source.split('\n').filter(l => l.trim() && !/^(#|\[|!|\||>|```)/.test(l)).join(' ').replace(/[*`]/g, '').slice(0, 160);
 
 export function renderMarkdown(root, products, product, chapter, print = false) {
@@ -67,16 +67,18 @@ export function renderMarkdown(root, products, product, chapter, print = false) 
     const dest = owner?.chapters.find(c => c.file === target);
     if (dest) {
       if (print && owner.id === product.id && (print === true || dest.key === chapter.key)) return `#chapter-${dest.key}${fragment ? '-' + fragment : ''}`;
-      if (print) return `${owner.origin}${owner.basePath}${dest.key}.html${fragment ? '#' + fragment : ''}`;
-      return `${owner.id === product.id ? product.basePath : owner.origin + owner.basePath}${dest.key}.html${fragment ? '#' + fragment : ''}`;
+      if (print) return `${chapterURL(owner, dest)}${fragment ? '#' + fragment : ''}`;
+      return `${owner.id === product.id ? product.basePath : owner.origin + owner.basePath}${encodeURIComponent(dest.key)}.html${fragment ? '#' + fragment : ''}`;
     }
     if (/\.md$/i.test(target)) {
       if (path.basename(target).toLowerCase() === 'readme.md') return print ? '#manual' : (owner ? owner.origin + owner.basePath : product.origin + '/');
       throw new Error(`Markdown 链接没有对应编号章节：${href}`);
     }
     if (!owner) throw new Error(`资源必须位于产品目录内：${href}`);
+    owner.assets?.add(target);
     const relative = path.relative(owner.directory, target).split(path.sep).map(encodeURIComponent).join('/');
-    return print ? `/products/${owner.id}/${relative}` : `${owner.id === product.id ? product.basePath : owner.origin + owner.basePath}${relative}${fragment ? '#' + fragment : ''}`;
+    if (print) return `${image ? (owner.outputPath || `/products/${owner.id}/`) : owner.origin + owner.basePath}${relative}${fragment ? '#' + fragment : ''}`;
+    return `${owner.id === product.id ? product.basePath : owner.origin + owner.basePath}${relative}${fragment ? '#' + fragment : ''}`;
   };
   const walk = list => {
     for (let i = 0; i < list.length; i++) {

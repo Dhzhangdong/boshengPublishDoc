@@ -81,7 +81,7 @@ compose exec -T web wget -q -O /dev/null http://127.0.0.1:8080/health.json
 probes=$(compose exec -T web cat /usr/share/nginx/html/health-probes.txt)
 test -n "$probes"
 while IFS= read -r probe; do
-  [[ "$probe" = /products/* && "$probe" != *..* ]]
+  [[ ( "$probe" = /products/* || "$probe" = /articles/* ) && "$probe" != *..* ]]
   compose exec -T web wget -q -O /dev/null "http://127.0.0.1:8080$probe"
 done <<< "$probes"
 mapping=$(docker_cmd port "$container" 8080/tcp)

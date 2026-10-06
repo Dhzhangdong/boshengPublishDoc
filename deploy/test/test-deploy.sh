@@ -21,7 +21,7 @@ case "$1" in
    case " $* " in
      *' pull web '*) if [ "$SCENARIO" = pull_failure ]; then exit 9; fi ;;
      *' ps -q web '*) echo mock-container ;;
-     *' cat /usr/share/nginx/html/health-probes.txt '*) printf '/products/sample/01.html\n/products/sample/pdfs/manual.pdf\n' ;;
+     *' cat /usr/share/nginx/html/health-probes.txt '*) printf '/products/sample/01.html\n/products/sample/pdfs/manual.pdf\n/articles/\n/articles/pdfs/sample.pdf\n' ;;
    esac ;;
  *) exit 98 ;;
 esac
@@ -55,6 +55,7 @@ for scenario in success health_failure pull_failure first_failure promotion_fail
       test "$result" = 0
       grep -Fq "$image" "$task_dir/.images.env"
       grep -Fq '/products/sample/pdfs/manual.pdf' "$MOCK_LOG"
+      grep -Fq '/articles/pdfs/sample.pdf' "$MOCK_LOG"
       ;;
     health_failure)
       test "$result" != 0

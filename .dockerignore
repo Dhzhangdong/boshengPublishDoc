@@ -2,5 +2,4 @@ node_modules
 dist
 tmp
 output
-技术分享/qa
 # .git is deliberately included: document timestamps come from Git history.

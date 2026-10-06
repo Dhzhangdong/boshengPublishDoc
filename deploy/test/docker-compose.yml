@@ -1,0 +1,15 @@
+name: publish-doc-test
+services:
+  web:
+    image: ${SERVER_IMAGE:?SERVER_IMAGE is required}
+    restart: unless-stopped
+    ports:
+      - "${DOC_BIND_IP:-192.168.1.85}:${DOC_PORT:-15120}:8080"
+    labels:
+      bosheng.service: publishDoc
+      bosheng.version: ${SERVICE_VERSION:?SERVICE_VERSION is required}
+    healthcheck:
+      test: [CMD-SHELL, 'wget -q -O /dev/null http://127.0.0.1:8080/health.json']
+      interval: 5s
+      timeout: 5s
+      retries: 24

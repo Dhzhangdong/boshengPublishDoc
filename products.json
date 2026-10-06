@@ -1,0 +1,20 @@
+{
+  "products": [
+    {
+      "id": "ai-reception",
+      "directory": "AI接待员",
+      "name": "AI接待员",
+      "origin": "https://aireceptionist.bosheng.online",
+      "basePath": "/doc/",
+      "publisher": "博生"
+    },
+    {
+      "id": "ai-reception2",
+      "directory": "AI接待员02",
+      "name": "AI接待员02",
+      "origin": "https://aireceptionist2.bosheng.online",
+      "basePath": "/doc/",
+      "publisher": "博生"
+    }
+  ]
+}

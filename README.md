@@ -1,5 +1,11 @@
 # 产品与技术文档
 
+本仓库集中维护产品说明书的 Markdown 与图片，构建时按文件序号生成静态 HTML、逐章 PDF 和完整产品 PDF；各产品通过自己的 `/doc/` 路径访问。
+
+- [构建与发布规则](docs/构建与发布规则.md)
+- [Gitea CD 与反向代理配置](deploy/test/README.md)
+- 产品配置：`products.json`；本地运行：`npm ci`、`npm run browser:install`、`npm run build`、`npm run verify`、`npm run preview`。
+
 ## 产品手册
 
 - [AI接待员产品说明书](产品手册/AI接待员/README.md)：产品介绍、注册入门、企业知识、网站接入、工单、会话、套餐与团队权限，附实际产品页面截图。

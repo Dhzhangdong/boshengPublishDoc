@@ -1,0 +1,87 @@
+name: publishDoc CD
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: git.bosheng.online
+      REGISTRY_OWNER: lekutaoxian
+      REGISTRY_USERNAME: ${{ vars.GITEAREGISTRYUSERNAME }}
+      REGISTRY_TOKEN: ${{ secrets.GITEAREGISTRYTOKEN }}
+      REMOTE_HOST: ${{ vars.UBUNTOSERVERTESTIP }}
+      REMOTE_USERNAME: ${{ vars.UBUNTOSERVERTESTUSERNAME }}
+      REMOTE_PASSWORD: ${{ secrets.UBUNTOSERVERTESTUSERPWD }}
+      REMOTE_DEPLOY_DIR: publishDoc/test
+      DOCKER_BUILDKIT: '1'
+    steps:
+      - name: Validate main and organization configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          for name in REGISTRY_USERNAME REGISTRY_TOKEN REMOTE_HOST REMOTE_USERNAME REMOTE_PASSWORD; do
+            test -n "${!name:-}" || { echo "Missing variable or secret: $name" >&2; exit 1; }
+          done
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$REMOTE_USERNAME" =~ ^[a-zA-Z_][a-zA-Z0-9_-]*$ ]]
+          [[ "$REMOTE_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]]
+          [[ "$REGISTRY_USERNAME" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]]
+      - name: Checkout complete Git history
+        uses: https://gitea.com/actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate deployment definitions
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n deploy/test/deploy.sh
+          bash deploy/test/test-deploy.sh
+          SERVER_IMAGE=publish-doc:validate SERVICE_VERSION="$GITHUB_SHA" \
+            docker compose -f deploy/test/docker-compose.yml config --quiet
+      - name: Build HTML and PDF, test and push immutable image
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth_dir=$(mktemp -d)
+          trap 'rm -f "$auth_dir/config.json"; rmdir "$auth_dir" 2>/dev/null || true' EXIT
+          export DOCKER_CONFIG="$auth_dir"
+          printf '%s' "$REGISTRY_TOKEN" | docker login "$REGISTRY" --username "$REGISTRY_USERNAME" --password-stdin
+          image="$REGISTRY/$REGISTRY_OWNER/publish-doc:$GITHUB_SHA"
+          docker build --pull --tag "$image" .
+          docker push "$image"
+      - name: Prepare SSH client
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v sshpass >/dev/null || ! command -v scp >/dev/null || ! command -v ssh >/dev/null; then
+            if command -v sudo >/dev/null; then
+              sudo apt-get update
+              sudo apt-get install -y --no-install-recommends openssh-client sshpass
+            else
+              apt-get update
+              apt-get install -y --no-install-recommends openssh-client sshpass
+            fi
+          fi
+          install -d -m 700 "$HOME/.ssh"
+      - name: Upload versioned deployment files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SSHPASS="$REMOTE_PASSWORD"
+          remote="$REMOTE_USERNAME@$REMOTE_HOST"
+          sshpass -e ssh -o StrictHostKeyChecking=accept-new "$remote" "mkdir -p '$REMOTE_DEPLOY_DIR'"
+          sshpass -e scp -o StrictHostKeyChecking=accept-new deploy/test/docker-compose.yml "$remote:$REMOTE_DEPLOY_DIR/docker-compose.$GITHUB_SHA.yml.next"
+          sshpass -e scp -o StrictHostKeyChecking=accept-new deploy/test/deploy.sh "$remote:$REMOTE_DEPLOY_DIR/deploy.$GITHUB_SHA.sh"
+      - name: Deploy with health checks and rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SSHPASS="$REMOTE_PASSWORD"
+          remote="$REMOTE_USERNAME@$REMOTE_HOST"
+          image="$REGISTRY/$REGISTRY_OWNER/publish-doc:$GITHUB_SHA"
+          printf '%s\n' "$REGISTRY_TOKEN" | sshpass -e ssh -o StrictHostKeyChecking=accept-new "$remote" \
+            "IFS= read -r registry_token; export REGISTRY_TOKEN=\"\$registry_token\"; exec bash \"\$HOME/$REMOTE_DEPLOY_DIR/deploy.$GITHUB_SHA.sh\" '$REMOTE_DEPLOY_DIR' '$image' '$GITHUB_SHA' '$REGISTRY_USERNAME'"

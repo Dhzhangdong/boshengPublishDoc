@@ -1,0 +1,19 @@
+{
+  "name": "bosheng-publish-doc",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:html": "node scripts/build.mjs --html-only",
+    "preview": "node scripts/preview.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "node scripts/verify.mjs",
+    "browser:install": "playwright install chromium"
+  },
+  "dependencies": {
+    "markdown-it": "15.0.2",
+    "playwright": "1.63.0"
+  }
+}

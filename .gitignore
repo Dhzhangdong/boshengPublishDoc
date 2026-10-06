@@ -3,3 +3,9 @@ dist/
 tmp/
 output/
 *.log
+
+# 技术分享仅提交审阅后的汇总、实验设计和哈希，避免原始请求记录进入公开镜像。
+/技术分享/qa/**/*.json
+!/技术分享/qa/**/report.json
+!/技术分享/qa/**/experiment-plan.json
+!/技术分享/qa/**/cold-request-hashes.json

@@ -12,7 +12,6 @@
     "frontendRequired": false,
     "keepExistingProtocolVersions": true
   },
-  "applicationId": "26850512-edb2-4e49-a390-1f0b1e3f9917",
   "modelKey": "default",
   "expectedProviderModel": "qwen3.8-flash",
   "commonSystemPrompt": "你是一名严谨的任务执行助手。完成用户任务，依据证据保留约束、结论、未知项；不得编造工具执行结果。最终清楚报告完成结果及实际遇到的失败。\n\n{{context_protocol}}",
@@ -171,5 +170,6 @@
     "solutionBuildErrors": 0,
     "ppeExperimentsStarted": false,
     "meaning": "真实PostgreSQL/Redis与脚本化模型只能验证机制，不代表真实LLM效果"
-  }
+  },
+  "publicationNote": "本文件保留预注册实验设计与合成测试题；不包含实际运行请求、消息历史或推理快照，内部应用标识已移除。"
 }

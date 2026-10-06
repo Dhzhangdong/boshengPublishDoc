@@ -4,12 +4,10 @@
   "application": "agentcoreTest",
   "protocol": "unified@1",
   "providerModel": "qwen3.8-flash",
-  "instanceId": "codex-dev-unified-20261005",
   "scope": "真实LLM首轮探索性测试；3个根Run和2个维护子Run。未修改或发布Runtime。",
   "roots": [
     {
       "case": "functionalRun",
-      "runId": "733d5825-f668-46af-9475-26c72b9ce89f",
       "status": "failed",
       "steps": 28,
       "toolCalls": 28,
@@ -19,7 +17,6 @@
     },
     {
       "case": "guidedRun",
-      "runId": "bb3a39d4-f713-465c-934f-723c38107208",
       "status": "failed",
       "steps": 27,
       "toolCalls": 27,
@@ -29,7 +26,6 @@
     },
     {
       "case": "naturalRun",
-      "runId": "7f20128f-9296-43ba-888e-df35e2a4b961",
       "status": "completed",
       "steps": 17,
       "toolCalls": 16,
@@ -109,10 +105,5 @@
     "未覆盖所有异常范围、并发、崩溃恢复、跨窗口压缩交错；此前自动化测试不算本次PPE证据。",
     "22万累计token运行上限由测试设置，失败是该预算下的结果，不能声称协议无法在更高预算完成。"
   ],
-  "files": [
-    "mapping-evidence.json",
-    "baseline-evidence.json",
-    "guided-evidence.json",
-    "natural-evidence.json"
-  ]
+  "publicationNote": "公开版仅保留实验汇总、结果统计与分析；原始请求、消息、工具轨迹及推理快照不随本仓库公开，内部运行标识已移除。"
 }

@@ -213,11 +213,11 @@ expectedWindowId 能拒绝“模型以为在 beta，实际上在 alpha”的写�
 
 ### 实验记录与复查入口
 
-[1] [unified@3 消息映射与三轮任务对照报告](qa/unified-mapping-ab-20261005/report.json)，2026-10-05。附[预注册实验计划](qa/unified-mapping-ab-20261005/experiment-plan.json)与[冷启动请求哈希](qa/unified-mapping-ab-20261005/cold-request-hashes.json)；逐轮原始消息和推理快照位于同目录。
+[1] [unified@3 消息映射与三轮任务对照报告](qa/unified-mapping-ab-20261005/report.json)，2026-10-05。附[预注册实验计划](qa/unified-mapping-ab-20261005/experiment-plan.json)与[冷启动请求哈希](qa/unified-mapping-ab-20261005/cold-request-hashes.json)。公开版保留实验设计、哈希核对及结果汇总，不提供逐轮原始消息、实际请求和推理快照。
 
-[2] [unified@1 PPE 首轮探索测试报告](qa/unified-ppe-20261005/report.json)，2026-10-05。包含功能、提示词加强与自主任务的轨迹及报告。
+[2] [unified@1 PPE 首轮探索测试报告](qa/unified-ppe-20261005/report.json)，2026-10-05。公开版保留功能、提示词加强与自主任务的结果汇总及分析。
 
-[3] [unified@2 PPE 复测报告](qa/unified-v2-ppe-20261005/report.json)，2026-10-05。包含窗口校验、原文回读、短任务和恢复范围认知的轨迹及报告。
+[3] [unified@2 PPE 复测报告](qa/unified-v2-ppe-20261005/report.json)，2026-10-05。公开版保留窗口校验、原文回读、短任务和恢复范围认知的结果汇总及分析。
 
 [4] [AgentCore 综合上下文协议设计说明](unified-context-protocol.md)。描述原始消息到模型视图的映射、窗口与折叠状态、压缩边界，以及 v1 至 v3 的设计变化。
 
